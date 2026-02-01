@@ -2,6 +2,28 @@
 
 # Infrastructure Overview for SmartAIPlatForm
 
+**Last Updated:** February 1, 2026
+
+**Review Reminder:** Review and update this document quarterly or after major releases.
+
+## Table of Contents
+1. [Overview](#overview)
+2. [Component Table](#component-table)
+3. [Summary Table](#summary-table)
+4. [Component Details](#component-details)
+5. [Actionable Infrastructure Checklist](#actionable-infrastructure-checklist)
+6. [Glossary](#glossary)
+7. [Change History](#change-history)
+
+---
+**See Also:**
+- [Actionable Infrastructure Checklist](#actionable-infrastructure-checklist)
+- [Actionable Architecture Checklist](architecture.md#actionable-architecture-checklist)
+- [Actionable Technology Comparison Checklist](technology-comparison.md#actionable-technology-comparison-checklist)
+- [Actionable Requirements Checklist](requirements.md#actionable-requirements-checklist)
+- [Actionable Progress Checklist](progress-checklist.md)
+---
+
 ---
 **See Also:**
 - [System Architecture](architecture.md)
@@ -9,7 +31,25 @@
 - [Technology Stack Comparison](technology-comparison.md)
 ---
 
-This document summarizes the infrastructure components for SmartAIPlatForm. Each section provides a concise overview, rationale, and key considerations. Detailed evaluation templates are provided in the appendix.
+
+## Overview
+_This document summarizes the infrastructure components for SmartAIPlatForm, including rationale, best practices, and review schedules._
+
+## Component Table
+| Component | Description | Code Location | Owner/Role |
+|-----------|-------------|--------------|------------|
+| Colima | Local container runtime for macOS | [docker-compose.yml](../../docker-compose.yml) | DevOps |
+| Docker | Containerization for all components | [docker-compose.yml](../../docker-compose.yml) | DevOps |
+| PostgreSQL | Database for persistent data | [docker-compose.yml](../../docker-compose.yml) | DevOps |
+| Python Env | Backend runtime isolation | [/backend/](../../backend/) | Backend Team |
+| Backend | API & business logic | [/backend/](../../backend/) | Backend Team |
+| Frontend | User interface | [/frontend/](../../frontend/) | Frontend Team |
+| CI/CD Pipeline | Automation & deployment | [.github/workflows/](../../.github/workflows/) | DevOps |
+| Git Automation | Lint, test, validate code | [.pre-commit-config.yaml](../../.pre-commit-config.yaml) | DevOps |
+
+> **Best Practice:** Each infrastructure component should have a clear owner and code location for traceability.
+
+---
 
 ## Summary Table
 | Component         | Purpose/Role                | Key Technology/Tool | Alternatives         |
@@ -27,7 +67,9 @@ This document summarizes the infrastructure components for SmartAIPlatForm. Each
 
 
 
-## Colima
+## Component Details
+
+### Colima
 - **Purpose:** Fast, native container runtime for macOS, enabling efficient local development with Docker containers.
 - **Usage:** Used to run all development containers (backend, frontend, database) locally. Integrates seamlessly with Docker CLI.
 - **Rationale:** Chosen over Docker Desktop for lower resource usage, open source model, and better performance on Apple Silicon.
@@ -37,13 +79,14 @@ This document summarizes the infrastructure components for SmartAIPlatForm. Each
 - **Migration Notes:** To migrate from Docker Desktop, uninstall Docker Desktop, install Colima via Homebrew, and run `colima start`. Update Docker context if needed.
 - **Risk Assessment:** Minimal risk; Colima is actively maintained. Monitor for breaking changes in Docker/Colima compatibility.
 - **POC/Demo:** [Colima Quickstart Guide](https://github.com/abiosoft/colima#quick-start)
-- **Visual Comparison:** ![Colima vs Docker Desktop](https://raw.githubusercontent.com/abiosoft/colima/main/docs/images/colima-docker-desktop.png)
+- **Visual Comparison:** ![Colima vs Docker Desktop](https://raw.githubusercontent.com/abiosoft/colima/main/docs/images/colima-docker-desktop.png "Colima vs Docker Desktop - Alt text for accessibility")
+- **Accessibility:** All diagrams and screenshots include alt text. If you add new visuals, use `![Description](path "Alt text")`.
 - **Review Schedule:** Review Colima and Docker compatibility every 6 months or after major Docker releases.
 - **References:** [Colima Docs](https://github.com/abiosoft/colima#readme)
 
 
 
-## Docker
+### Docker
 - **Purpose:** Containerization of all application components (frontend, backend, database) for consistent environments.
 - **Usage:** Build, run, and orchestrate services using Docker CLI and Compose. All environments (dev, test, prod) use Docker images.
 - **Rationale:** Industry standard, huge ecosystem, strong tooling, and compatibility with CI/CD and cloud providers.
@@ -53,13 +96,13 @@ This document summarizes the infrastructure components for SmartAIPlatForm. Each
 - **Migration Notes:** To migrate from VM-based dev, containerize each service, write Dockerfiles, and use Compose for orchestration.
 - **Risk Assessment:** Docker is mature but monitor for licensing changes and security vulnerabilities.
 - **POC/Demo:** [Docker Getting Started](https://docs.docker.com/get-started/)
-- **Visual Comparison:** ![Docker Compose Example](https://docs.docker.com/compose/images/architecture.svg)
+- **Visual Comparison:** ![Docker Compose Example](https://docs.docker.com/compose/images/architecture.svg "Docker Compose Example - Alt text for accessibility")
 - **Review Schedule:** Review Dockerfile best practices and Compose version every 6 months.
 - **References:** [Docker Docs](https://docs.docker.com/)
 
 
 
-## PostgreSQL
+### PostgreSQL
 - **Purpose:** Reliable, ACID-compliant relational database for all persistent data.
 - **Usage:** Main database for user data, audit logs, and application state. Managed via Docker container with persistent volumes.
 - **Rationale:** Advanced features (CTE, JSONB), open source, strong reliability, and large community.
@@ -69,13 +112,13 @@ This document summarizes the infrastructure components for SmartAIPlatForm. Each
 - **Migration Notes:** Use pg_dump/pg_restore for migration; test schema compatibility and data integrity.
 - **Risk Assessment:** Low risk; monitor for major version upgrades and breaking changes.
 - **POC/Demo:** [PostgreSQL Docker Example](https://hub.docker.com/_/postgres)
-- **Visual Comparison:** ![PostgreSQL Logo](https://www.postgresql.org/media/img/about/press/elephant.png)
+- **Visual Comparison:** ![PostgreSQL Logo](https://www.postgresql.org/media/img/about/press/elephant.png "PostgreSQL Logo - Alt text for accessibility")
 - **Review Schedule:** Review DB performance and backup strategy quarterly.
 - **References:** [PostgreSQL Docs](https://www.postgresql.org/docs/)
 
 
 
-## Python Environment
+### Python Environment
 - **Purpose:** Isolate backend dependencies and ensure reproducible builds.
 - **Usage:** Use poetry for dependency management and venv for virtual environments. All backend code runs inside a managed Python environment.
 - **Rationale:** Ensures consistent dependencies, easy updates, and reproducible builds across machines.
@@ -85,13 +128,13 @@ This document summarizes the infrastructure components for SmartAIPlatForm. Each
 - **Migration Notes:** To migrate from requirements.txt, run `poetry init` and add dependencies; update CI/CD scripts.
 - **Risk Assessment:** Low risk; monitor for poetry/venv updates and breaking changes.
 - **POC/Demo:** [Poetry Quickstart](https://python-poetry.org/docs/basic-usage/)
-- **Visual Comparison:** ![Poetry vs Pipenv](https://raw.githubusercontent.com/python-poetry/poetry/master/docs/images/poetry-vs-pipenv.png)
+- **Visual Comparison:** ![Poetry vs Pipenv](https://raw.githubusercontent.com/python-poetry/poetry/master/docs/images/poetry-vs-pipenv.png "Poetry vs Pipenv - Alt text for accessibility")
 - **Review Schedule:** Review dependency updates and lock file quarterly.
 - **References:** [Poetry Docs](https://python-poetry.org/docs/)
 
 
 
-## Backend
+### Backend
 - **Purpose:** Serve REST APIs, business logic, and integrations (DB, AI, notifications).
 - **Usage:** FastAPI app runs in Docker, exposes OpenAPI docs, async endpoints, and integrates with PostgreSQL and Celery.
 - **Rationale:** FastAPI is async, modern, and generates docs automatically. Modular codebase for maintainability.
@@ -101,13 +144,13 @@ This document summarizes the infrastructure components for SmartAIPlatForm. Each
 - **Migration Notes:** To migrate from Flask, refactor endpoints to async, update dependency injection, and test with OpenAPI.
 - **Risk Assessment:** FastAPI is newer; monitor for breaking changes and async bugs.
 - **POC/Demo:** [FastAPI Tutorial](https://fastapi.tiangolo.com/tutorial/)
-- **Visual Comparison:** ![FastAPI Logo](https://fastapi.tiangolo.com/img/logo-margin/logo-teal.png)
+- **Visual Comparison:** ![FastAPI Logo](https://fastapi.tiangolo.com/img/logo-margin/logo-teal.png "FastAPI Logo - Alt text for accessibility")
 - **Review Schedule:** Review API endpoints and dependencies quarterly.
 - **References:** [FastAPI Docs](https://fastapi.tiangolo.com/)
 
 
 
-## Frontend
+### Frontend
 - **Purpose:** User interface and client-side logic for all user interactions.
 - **Usage:** React app (TypeScript, MUI) built and served via Docker. Connects to backend via REST API.
 - **Rationale:** React is flexible, has a huge ecosystem, and strong TypeScript support.
@@ -117,13 +160,13 @@ This document summarizes the infrastructure components for SmartAIPlatForm. Each
 - **Migration Notes:** To migrate from Angular, refactor components to React, update routing/state management, and test UI flows.
 - **Risk Assessment:** React is mature; monitor for breaking changes in major releases.
 - **POC/Demo:** [React Getting Started](https://react.dev/learn)
-- **Visual Comparison:** ![React Logo](https://react.dev/images/og-home.png)
+- **Visual Comparison:** ![React Logo](https://react.dev/images/og-home.png "React Logo - Alt text for accessibility")
 - **Review Schedule:** Review dependencies and UI libraries every 6 months.
 - **References:** [React Docs](https://react.dev/)
 
 
 
-## CI/CD Pipeline
+### CI/CD Pipeline
 - **Purpose:** Automate build, test, and deployment for all code changes.
 - **Usage:** GitHub Actions runs tests, lints, builds, and deploys on every commit/PR. YAML config in `.github/workflows`.
 - **Rationale:** Tight GitHub integration, easy to extend, and free for open source.
@@ -133,13 +176,13 @@ This document summarizes the infrastructure components for SmartAIPlatForm. Each
 - **Migration Notes:** To migrate from Jenkins, rewrite pipelines in YAML, use GitHub Actions runners, and test all jobs.
 - **Risk Assessment:** GitHub Actions is robust; monitor for API changes and runner deprecations.
 - **POC/Demo:** [GitHub Actions Example](https://github.com/actions/starter-workflows)
-- **Visual Comparison:** ![GitHub Actions Workflow](https://docs.github.com/assets/images/help/repository/actions-workflow-file.png)
+- **Visual Comparison:** ![GitHub Actions Workflow](https://docs.github.com/assets/images/help/repository/actions-workflow-file.png "GitHub Actions Workflow - Alt text for accessibility")
 - **Review Schedule:** Review workflows and secrets every 6 months.
 - **References:** [GitHub Actions Docs](https://docs.github.com/en/actions)
 
 
 
-## Git Automation & Validation
+### Git Automation & Validation
 - **Purpose:** Enforce code quality, linting, and pre-commit checks for all contributors.
 - **Usage:** pre-commit hooks run linters, formatters, and tests before code is committed. Configured via `.pre-commit-config.yaml` and project linters.
 - **Rationale:** Flexible, integrates with all major VCS, and large ecosystem of hooks.
@@ -149,12 +192,58 @@ This document summarizes the infrastructure components for SmartAIPlatForm. Each
 - **Migration Notes:** To migrate from Husky, port hook configs to pre-commit YAML, test all hooks locally and in CI.
 - **Risk Assessment:** Low risk; monitor for new hook versions and linter updates.
 - **POC/Demo:** [pre-commit Quickstart](https://pre-commit.com/#quick-start)
-- **Visual Comparison:** ![pre-commit Logo](https://pre-commit.com/logo.png)
+- **Visual Comparison:** ![pre-commit Logo](https://pre-commit.com/logo.png "pre-commit Logo - Alt text for accessibility")
 - **Review Schedule:** Review hook configs and linter versions quarterly.
-- **References:** [pre-commit Docs](https://pre-commit.com/)
 
----
 
+
+
+## Actionable Infrastructure Checklist
+## Glossary
+- **Colima:** Fast, open-source container runtime for macOS.
+- **Docker:** Platform for developing, shipping, and running applications in containers.
+- **Poetry:** Python dependency management and packaging tool.
+- **CI/CD:** Continuous Integration / Continuous Deployment.
+- **DevOps:** Team/role responsible for automation, CI/CD, and infrastructure.
+- **Alt text:** Textual description for images to support accessibility.
+
+## Change History
+| Date | Change | Author |
+|------|--------|--------|
+| 2026-02-01 | Major cleanup, TOC, glossary, roles, code links, accessibility, review reminder | GitHub Copilot |
+
+- [ ] **Colima Setup & Review:**
+	- [ ] Install and configure Colima for all developers.
+	- [ ] Review Colima and Docker compatibility every 6 months.
+	- [ ] Document migration from Docker Desktop if applicable.
+- [ ] **Docker & Compose:**
+	- [ ] Write and maintain Dockerfiles for all services.
+	- [ ] Use docker-compose for local orchestration.
+	- [ ] Regularly review Dockerfile best practices and Compose version.
+- [ ] **PostgreSQL:**
+	- [ ] Set up PostgreSQL with persistent volumes.
+	- [ ] Test schema migrations, backup/restore, and failover scenarios.
+	- [ ] Review DB performance and backup strategy quarterly.
+- [ ] **Python Environment:**
+	- [ ] Use poetry for dependency management and venv for isolation.
+	- [ ] Recreate and test environments regularly.
+	- [ ] Review dependency updates and lock file quarterly.
+- [ ] **Backend (FastAPI):**
+	- [ ] Run FastAPI in Docker, expose OpenAPI docs.
+	- [ ] Review API endpoints and dependencies quarterly.
+	- [ ] Test with unit/integration/load tests.
+- [ ] **Frontend (React):**
+	- [ ] Build and serve React app via Docker.
+	- [ ] Maintain component-based architecture and TypeScript usage.
+	- [ ] Test with Jest, React Testing Library, and Cypress.
+- [ ] **CI/CD Pipeline:**
+	- [ ] Use GitHub Actions for build, test, and deploy.
+	- [ ] Integrate pre-commit, linting, and automated code validation.
+	- [ ] Review pipeline and automation scripts regularly.
+- [ ] **Risk & Migration Management:**
+	- [ ] Document migration notes for each component.
+	- [ ] Monitor for breaking changes and major upgrades.
+	- [ ] Review risk assessments and update as needed.
 
 ---
 

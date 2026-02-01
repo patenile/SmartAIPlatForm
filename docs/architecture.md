@@ -1,55 +1,169 @@
+
+---
+**See Also:**
+- [Actionable Architecture Checklist](#actionable-architecture-checklist)
+- [Actionable Infrastructure Checklist](infrastructure.md#actionable-infrastructure-checklist)
+- [Actionable Technology Comparison Checklist](technology-comparison.md#actionable-technology-comparison-checklist)
+- [Actionable Requirements Checklist](requirements.md#actionable-requirements-checklist)
+- [Actionable Progress Checklist](progress-checklist.md)
+---
+
+# SmartAIPlatForm System Architecture
+<!--
+  Architecture documentation for SmartAIPlatForm
+  Maintainer: [Your Name/Team]
+  Review Reminder: Review/update this doc quarterly or after major releases.
+-->
+
+**Last Updated:** February 1, 2026
+
+**Review Reminder:** Review and update this document quarterly or after major releases.
+
+
+## Table of Contents
+1. [Overview](#1-overview)
+2. [Component Diagram](#2-component-diagram)
+3. [Validation & Verification](#3-validation--verification)
+  - [Component Validation Checklist](#31-component-validation-checklist)
+  - [System Integration Validation](#32-system-integration-validation)
+  - [Automated Validation](#33-automated-validation)
+  - [References](#34-references)
+4. [Advanced Practices](#4-advanced-practices)
+5. [Advanced Architecture Considerations](#5-advanced-architecture-considerations)
+6. [Operational & Disaster Recovery](#6-operational--disaster-recovery)
+7. [Testing & Environment](#7-testing--environment)
+8. [Diagnosis & Debugging](#8-diagnosis--debugging)
+9. [Appendix: Actionable Architecture Checklist](#appendix-actionable-architecture-checklist)
+10. [Glossary](#glossary)
+11. [Change History](#change-history)
+
+
+This document provides a high-level overview and component diagram for the SmartAIPlatForm.
+
+
+
+## 1. Overview
+_This section provides a high-level summary of the SmartAIPlatForm architecture and its modular components._
+
+| Component      | Description | Code Location | Owner/Role |
+|--------------- |-------------|--------------|------------|
+| Frontend (React + TypeScript) | User interface, authentication, profile management, notifications, AI assistant widget | [/frontend/](../../frontend/) | Frontend Team |
+| Backend (FastAPI) | REST API, business logic, authentication, user management, notifications, AI integration, file handling | [/backend/](../../backend/) | Backend Team |
+| Database (PostgreSQL) | Persistent storage for users, logs, and application data | Docker Compose: [docker-compose.yml](../../docker-compose.yml) | DevOps |
+| Task Queue (Celery/RQ) | Background jobs (notifications, async tasks) | [/backend/tasks/](../../backend/tasks/) | Backend Team |
+| File Storage (S3-compatible) | User uploads, avatars, documents | [config/storage/](../../config/storage/) | DevOps |
+| CI/CD (GitHub Actions) | Automated build, test, deploy | [.github/workflows/](../../.github/workflows/) | DevOps |
+| Containerization (Docker + Colima) | Local and production orchestration | [docker-compose.yml](../../docker-compose.yml) | DevOps |
+| Monitoring (Prometheus/Grafana) | Metrics, health checks, dashboards | [config/monitoring/](../../config/monitoring/) | DevOps |
+
+> **Best Practice:** Each component should have a clear owner and code location for traceability.
+
+
+
+## 2. Component Diagram
+_Visual representation of the system’s main components and their interactions._
+
+![Architecture Diagram](./architecture-diagram.png "System Architecture Overview")
+
+> **Tip:** For the latest diagram, see [architecture-diagram.png](./architecture-diagram.png) or the [Mermaid source](#).
+
+```mermaid
+graph TD
+  subgraph Frontend
+    FE[React App]
+  end
+  subgraph Backend
+    BE[FastAPI API]
+    TQ[Task Queue (Celery/RQ)]
+  end
+  DB[(PostgreSQL DB)]
+  FS[(S3 File Storage)]
+  CI[CI/CD (GitHub Actions)]
+  MON[Monitoring (Prometheus/Grafana)]
+
+  FE -- REST/API --> BE
+  BE -- SQL --> DB
+  BE -- File Upload/Download --> FS
+  BE -- Async Jobs --> TQ
+  TQ -- DB Ops --> DB
+  CI -- Deploys --> FE
+  CI -- Deploys --> BE
+  MON -- Metrics --> BE
+  MON -- Metrics --> FE
+```
+> **Note:** All diagrams and screenshots should include alt text for accessibility. If you add new visuals, use `![Description](path "Alt text")`.
+
+
+## 3. Validation & Verification
+_How to validate the setup, operation, and integration of all components._
+
+### 3.1 Component Validation Checklist
+...existing code for validation checklists...
+
+### 3.2 System Integration Validation
+...existing code for system integration validation...
+
+### 3.3 Automated Validation
+...existing code for automated validation...
+
+### 3.4 References
+...existing code for references...
+
+---
+
+## 4. Advanced Practices
+_Best practices and advanced techniques for reliability, scalability, and maintainability._
+...existing code for advanced practices...
+
+## 5. Advanced Architecture Considerations
+_Detailed architectural topics and policies for robust systems._
+...existing code for advanced architecture considerations...
+
+## 6. Operational & Disaster Recovery
+_Strategies for resilience, disaster recovery, and operational safety._
+...existing code for resilience, disaster recovery, resetting, security, backup...
+
+## 7. Testing & Environment
+_Testing strategy, environment separation, and data management._
+...existing code for testing strategy, environment & data separation...
+
+## 8. Diagnosis & Debugging
+_Practical steps and commands for diagnosing and debugging issues._
+...existing code for diagnosis & debugging...
+
+## Appendix: Actionable Architecture Checklist
+_Comprehensive actionable checklist for architecture best practices._
+...existing code for actionable checklist...
+
+
+## Glossary
+- **CI/CD:** Continuous Integration / Continuous Deployment
+- **IaC:** Infrastructure as Code
+- **SLO:** Service Level Objective
+- **EOL:** End of Life
+- **RBAC:** Role-Based Access Control
+- **API:** Application Programming Interface
+- **HPA:** Horizontal Pod Autoscaler
+- **DR:** Disaster Recovery
+- **e2e:** End-to-End (testing)
+- **Colima:** A fast, open-source container runtime for macOS.
+- **Mermaid:** A markdown-based diagramming tool.
+- **Prometheus:** Open-source monitoring and alerting toolkit.
+- **Grafana:** Visualization and analytics software for monitoring.
+- **Celery/RQ:** Python task queue libraries for background jobs.
+- **S3:** Amazon Simple Storage Service or compatible object storage.
+- **DevOps:** Team/role responsible for automation, CI/CD, and infrastructure.
+- **Alt text:** Textual description for images to support accessibility.
+
+## Change History
+| Date | Change | Author |
+|------|--------|--------|
+| 2026-02-01 | Major cleanup, TOC, glossary, roles, code links, accessibility, review reminder | GitHub Copilot |
+
 ## Good-to-Have Advanced Practices & Checklists
 
 ### Chaos Engineering & Fault Injection
-- Use tools like Chaos Mesh, Gremlin, or custom scripts to inject failures (e.g., kill containers, simulate network issues).
-- Regularly run controlled chaos experiments in staging to validate resilience.
-- Document findings and improvements after each experiment.
-
-### Service Level Objectives (SLOs) & Error Budgets
-- Define SLOs for uptime, latency, and error rates for each service.
-- Track error budgets and use them to guide engineering priorities and incident response.
-- Review SLOs quarterly and adjust as needed.
-
-### Feature Toggles & Progressive Delivery
-- Use feature flags for safe rollouts, A/B testing, and canary deployments.
-- Document flag usage and cleanup process.
-- Consider tools like LaunchDarkly, Unleash, or open-source alternatives.
-
-### Automated Dependency Rollback
-- Implement automated rollback for failed deployments or dependency upgrades.
-- Monitor post-release health and trigger rollback on critical errors.
-
-### Self-Healing & Auto-Scaling
-- Use Kubernetes HPA or Docker Compose restart policies for auto-scaling and self-healing.
-- Document scaling thresholds and recovery actions.
-
-### API Gateway & Service Mesh
-- Consider using an API gateway (Kong, Traefik) for advanced routing, security, and rate limiting.
-- Evaluate service mesh (Istio, Linkerd) for observability, security, and traffic management in microservices.
-
-### Legal & Regulatory Watch
-- Assign responsibility for monitoring changes in laws/regulations (e.g., data residency, export controls).
-- Document compliance review process.
-
-### Sustainability & Green IT
-- Track and optimize resource usage for energy efficiency and cost savings.
-- Consider cloud provider sustainability features and carbon footprint reporting.
-
-### User Feedback & Telemetry
-- Collect anonymized usage data and user feedback to inform product and architecture decisions.
-- Document privacy and opt-out mechanisms.
-
-### Community & Open Source Strategy
-- If open source, maintain contribution guidelines, code of conduct, and community engagement plans.
-- Document release and governance process.
-
-### Business Continuity Planning
-- Go beyond disaster recovery: plan for business continuity in case of major outages, loss of key personnel, or vendor lock-in.
-- Document continuity plans and test them annually.
-
-### Threat Modeling
-- Regularly perform and document threat modeling exercises to identify and mitigate new risks.
-- Use tools like Microsoft Threat Modeling Tool or OWASP Threat Dragon.
+...existing code...
 ## Advanced Architecture Considerations & Checklists
 
 ### API Versioning & Deprecation Policy
@@ -106,9 +220,79 @@
 - Archive code and data securely after sunsetting.
 
 ### Ongoing Review & Improvement
-- Schedule regular architecture and security reviews (quarterly or after major changes).
-- Update documentation and diagrams as the system evolves.
-- Solicit feedback from developers and stakeholders for continuous improvement.
+
+---
+
+## Actionable Architecture Checklist
+
+- [ ] **Chaos Engineering & Fault Injection:**
+  - [ ] Run controlled chaos experiments in staging (Chaos Mesh, Gremlin, custom scripts).
+  - [ ] Document findings and improvements after each experiment.
+- [ ] **Service Level Objectives (SLOs) & Error Budgets:**
+  - [ ] Define and track SLOs for all critical services.
+  - [ ] Review and adjust SLOs quarterly.
+- [ ] **Feature Toggles & Progressive Delivery:**
+  - [ ] Implement feature flags for safe rollouts and A/B testing.
+  - [ ] Document flag usage and cleanup process.
+- [ ] **Automated Dependency Rollback:**
+  - [ ] Implement automated rollback for failed deployments or upgrades.
+  - [ ] Monitor post-release health and trigger rollback on errors.
+- [ ] **Self-Healing & Auto-Scaling:**
+  - [ ] Configure auto-scaling and self-healing for all services (Kubernetes HPA, Docker policies).
+  - [ ] Document scaling thresholds and recovery actions.
+- [ ] **API Gateway & Service Mesh:**
+  - [ ] Evaluate and implement API gateway/service mesh as needed.
+  - [ ] Document routing, security, and observability setup.
+- [ ] **Legal & Regulatory Watch:**
+  - [ ] Assign responsibility for monitoring legal/regulatory changes.
+  - [ ] Document compliance review process.
+- [ ] **Sustainability & Green IT:**
+  - [ ] Track and optimize resource usage for energy/cost efficiency.
+  - [ ] Document sustainability practices.
+- [ ] **User Feedback & Telemetry:**
+  - [ ] Collect anonymized usage data and user feedback.
+  - [ ] Document privacy and opt-out mechanisms.
+- [ ] **Community & Open Source Strategy:**
+  - [ ] Maintain contribution guidelines and code of conduct.
+  - [ ] Document release and governance process.
+- [ ] **Business Continuity Planning:**
+  - [ ] Maintain and test business continuity plans annually.
+  - [ ] Document continuity plans and test results.
+- [ ] **Threat Modeling:**
+  - [ ] Perform and document regular threat modeling exercises.
+  - [ ] Use tools like Microsoft Threat Modeling Tool or OWASP Threat Dragon.
+- [ ] **Observability & Tracing:**
+  - [ ] Implement distributed tracing and unique request IDs.
+  - [ ] Correlate logs, traces, and metrics for visibility.
+- [ ] **Rate Limiting & Abuse Protection:**
+  - [ ] Apply and monitor rate limiting for all APIs.
+  - [ ] Implement IP blacklisting/whitelisting as needed.
+- [ ] **Data Privacy & Compliance:**
+  - [ ] Document and enforce data retention/deletion policies.
+  - [ ] Ensure GDPR/CCPA compliance and regular reviews.
+- [ ] **Cost Management:**
+  - [ ] Monitor and alert on cloud/infrastructure costs.
+  - [ ] Use resource tagging and budgeting.
+- [ ] **Documentation Automation:**
+  - [ ] Auto-generate and publish API docs and diagrams.
+  - [ ] Automate documentation builds and updates.
+- [ ] **Accessibility & Internationalization:**
+  - [ ] Test for accessibility (WCAG 2.1 AA) and i18n support.
+  - [ ] Use automated tools and manual audits.
+- [ ] **Third-Party Dependency Management:**
+  - [ ] Track, update, and audit all dependencies.
+  - [ ] Evaluate new dependencies for license/security.
+- [ ] **Onboarding & Knowledge Transfer:**
+  - [ ] Maintain onboarding guides and architecture walkthroughs.
+  - [ ] Provide diagrams and codebase tours for new team members.
+- [ ] **End-of-Life & Sunsetting:**
+  - [ ] Document and communicate EOL plans for services/components.
+  - [ ] Archive code/data securely after sunsetting.
+- [ ] **Ongoing Review & Improvement:**
+  - [ ] Schedule and document regular architecture/security reviews.
+  - [ ] Solicit feedback and update documentation as needed.
+
+---
 ## Resilience & Disaster Recovery
 
 This section outlines strategies to protect the system from OS crashes, process failures, and security breaches, and to ensure rapid recovery.
