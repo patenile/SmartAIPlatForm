@@ -1,0 +1,11 @@
+repos:
+  - repo: local
+    hooks:
+      - id: check-links
+        name: Check Markdown links
+        entry: .venv/bin/python scripts/check_links.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        files: ^docs/.*\.md$
+        verbose: true

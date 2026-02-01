@@ -1,14 +1,80 @@
 
 # Technology Stack Comparison
 
+**Last Updated:** February 1, 2026
+
+**Review Reminder:** Review and update this document every 6-12 months or after major releases.
+
+## Table of Contents
+1. [Overview](#overview)
+2. [Component Table](#component-table)
+3. [Summary Table](#summary-table)
+4. [Layer-by-Layer Comparison](#layer-by-layer-comparison)
+5. [Actionable Technology Comparison Checklist](#actionable-technology-comparison-checklist)
+6. [Glossary](#glossary)
+7. [Change History](#change-history)
+
 ---
+**See Also:**
+- [Actionable Technology Comparison Checklist](#actionable-technology-comparison-checklist)
+- [Actionable Architecture Checklist](architecture.md#actionable-architecture-checklist)
+- [Actionable Infrastructure Checklist](infrastructure.md#actionable-infrastructure-checklist)
+- [Actionable Requirements Checklist](requirements.md#actionable-requirements-checklist)
+- [Actionable Progress Checklist](progress-checklist.md)
+---
+
 **See Also:**
 - [System Architecture](architecture.md)
 - [Infrastructure Overview](infrastructure.md)
+
+---
+
+## Actionable Technology Comparison Checklist
+
+- [ ] **Technology Selection:**
+	- [ ] Review and document candidate technologies for each layer (frontend, backend, database, etc.).
+	- [ ] Compare options for community support, compatibility, performance, security, licensing, and team expertise.
+	- [ ] Make final selections and document rationale.
+- [ ] **Migration Planning:**
+	- [ ] Document migration notes and steps for each technology.
+	- [ ] Test migration paths and compatibility as needed.
+- [ ] **Review & Update:**
+	- [ ] Schedule regular reviews of technology choices (every 6-12 months or after major releases).
+	- [ ] Update documentation and recommendations as the stack evolves.
+- [ ] **Risk Assessment:**
+	- [ ] Assess and document risks for each technology (e.g., licensing, security, support).
+	- [ ] Monitor for breaking changes and major upgrades.
+- [ ] **Alternatives & Rationale:**
+	- [ ] Clearly document alternatives considered and reasons for final choice.
+	- [ ] Link to real-world examples and references for each technology.
+
+---
 - [Requirements](requirements.md)
 ---
 
-This document provides a streamlined comparison of candidate technologies for each layer of the SmartAIPlatForm. Each section includes concise pros/cons and a clear recommendation. Templates for deeper evaluation are provided in the appendix.
+
+## Overview
+_This document provides a streamlined, actionable comparison of candidate technologies for each layer of SmartAIPlatForm, with rationale, best practices, and review schedules._
+
+## Component Table
+| Layer | Recommendation | Code Location | Owner/Role |
+|-------|----------------|--------------|------------|
+| Frontend | React | [/frontend/](../../frontend/) | Frontend Team |
+| Backend | FastAPI | [/backend/](../../backend/) | Backend Team |
+| Database | PostgreSQL | [docker-compose.yml](../../docker-compose.yml) | DevOps |
+| State Management | Redux/Zustand | [/frontend/](../../frontend/) | Frontend Team |
+| UI Libraries | MUI | [/frontend/](../../frontend/) | Frontend Team |
+| Containerization | Docker + Colima | [docker-compose.yml](../../docker-compose.yml) | DevOps |
+| CI/CD | GitHub Actions | [.github/workflows/](../../.github/workflows/) | DevOps |
+| Task Queues | Celery/RQ | [/backend/](../../backend/) | Backend Team |
+| Env Mgmt | poetry | [/backend/](../../backend/) | Backend Team |
+| File Storage | S3/MinIO | [docker-compose.yml](../../docker-compose.yml) | DevOps |
+| Monitoring | Prometheus + Grafana | [docker-compose.yml](../../docker-compose.yml) | DevOps |
+| Linting/Automation | pre-commit, linters | [.pre-commit-config.yaml](../../.pre-commit-config.yaml) | DevOps |
+
+> **Best Practice:** Each technology choice should have a clear owner and code location for traceability.
+
+---
 
 ## Summary Table
 | Layer                | Recommendation      | Alternatives         |
@@ -27,9 +93,8 @@ This document provides a streamlined comparison of candidate technologies for ea
 | Linting/Automation   | pre-commit, linters | Husky, custom scripts |
 
 ---
-# Technology Stack Comparison
 
-This document provides a detailed comparison of candidate technologies for each layer of the SmartAIPlatForm. Each section includes a table of pros and cons, and a summary recommendation.
+## Layer-by-Layer Comparison
 
 
 ## Table of Contents
@@ -46,6 +111,23 @@ This document provides a detailed comparison of candidate technologies for each 
 - [Monitoring/Observability](#monitoringobservability)
 - [Linting/Automation](#lintingautomation)
 ## File Storage
+**Accessibility:** All diagrams and screenshots include alt text. If you add new visuals, use `![Description](path "Alt text")`.
+## Glossary
+- **Colima:** Fast, open-source container runtime for macOS.
+- **Docker:** Platform for developing, shipping, and running applications in containers.
+- **Poetry:** Python dependency management and packaging tool.
+- **CI/CD:** Continuous Integration / Continuous Deployment.
+- **DevOps:** Team/role responsible for automation, CI/CD, and infrastructure.
+- **Alt text:** Textual description for images to support accessibility.
+- **MUI:** Material UI, a popular React UI library.
+- **Redux/Zustand:** State management libraries for React.
+- **S3/MinIO:** Object storage solutions, S3 is AWS, MinIO is self-hosted.
+- **Prometheus/Grafana:** Monitoring and observability tools.
+
+## Change History
+| Date | Change | Author |
+|------|--------|--------|
+| 2026-02-01 | Major cleanup, TOC, glossary, roles, code links, accessibility, review reminder | GitHub Copilot |
 **Recommendation:** S3-compatible (MinIO for local/dev, AWS S3 for prod)
 - Pros: Scalable, widely supported, S3 API standard, easy integration
 - Cons: S3 has cost, MinIO requires self-hosting
