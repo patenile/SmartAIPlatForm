@@ -25,8 +25,9 @@ This log provides a traceable record of all project-level tools, scripts, and au
 |---------------------|------------------------|---------------------|------------------------------|---------------------------------------|
 | pre-commit          | .pre-commit-config.yaml| Run checks before every commit (e.g., lint, link check) | On every git commit                  | `pre-commit install`                  |
 | check_links.py      | scripts/check_links.py  | Check all Markdown docs for broken links | Via pre-commit, CI, or manually       | `pip install requests` (for CI), auto-run by pre-commit and GitHub Action |
-| setup_env.py        | scripts/setup_env.py    | Ensures .venv exists, creates with python3.12 if missing, installs/checks required packages | `python run_app.py setup` or manually | Requires python3.12, requirements.txt, .venv |
+| setup_env.py        | scripts/setup_env.py    | Ensures .venv exists, creates with python3.12 if missing, installs/checks required packages | `python run_app.py setup` or manually | Requires python3.12 and requirements.txt; creates .venv if missing |
 | cleanup.py          | scripts/cleanup.py      | Cleans up all installed packages and removes .venv | `python run_app.py cleanup` or manually | Requires .venv present |
+| cleanup.py          | scripts/cleanup.py      | Cleans up all installed packages and removes .venv | `python run_app.py cleanup` or manually | Requires .venv present (created by setup_env.py) |
 | run_app.py          | run_app.py              | CLI orchestrator for setup, cleanup, and app run | `python run_app.py [setup|cleanup|run]` | Python 3.12+ |
 | check-links.yml     | .github/workflows/      | CI automation for link checking         | On every push/PR to docs/scripts      | GitHub Actions auto-runs              |
 | Docker/Colima       | docker-compose.yml      | Containerized local dev, cross-platform | On local dev, CI, prod                | See infrastructure.md                 |

@@ -33,9 +33,14 @@ def check_file_link(base, link):
 
 def main():
     # Warn if not running inside .venv
+    YELLOW = '\033[93m'
+    GREEN = '\033[92m'
+    RED = '\033[91m'
+    BOLD = '\033[1m'
+    RESET = '\033[0m'
     venv = os.environ.get('VIRTUAL_ENV')
     if not venv or not venv.endswith('.venv'):
-        print("WARNING: Not running inside project .venv! Activate with 'source .venv/bin/activate'.")
+        print(f"{BOLD}{YELLOW}WARNING: Not running inside project .venv! Activate with 'source .venv/bin/activate'.{RESET}")
     errors = []
     for root, _, files in os.walk(DOCS_DIR):
         for fname in files:
@@ -57,12 +62,12 @@ def main():
                     if not check_file_link(os.path.dirname(fpath), link):
                         errors.append(f"MISSING FILE: {link} in {fname} [{label}]")
     if errors:
-        print("\nBroken links found:")
+        print(f"\n{BOLD}{RED}Broken links found:{RESET}")
         for err in errors:
-            print("-", err)
+            print(f"{RED}- {err}{RESET}")
         exit(1)
     else:
-        print("All links OK.")
+        print(f"{BOLD}{GREEN}All links OK.{RESET}")
 
 if __name__ == '__main__':
     main()
