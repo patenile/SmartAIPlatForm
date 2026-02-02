@@ -1,0 +1,389 @@
+name: Test Scripts and CLI
+
+on:
+  push:
+    branches: [ main, docs ]
+  pull_request:
+    branches: [ main, docs ]
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.12', '3.13']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate || .venv\Scripts\activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest-randomly
+      - name: Run all tests with randomized order
+        run: |
+          source .venv/bin/activate || .venv\Scripts\activate
+          pytest -n auto -v --tb=short --random-order-bucket=module --randomly-seed=auto tests/
+      - name: Upload flakiness report
+        uses: actions/upload-artifact@v4
+        with:
+          name: flakiness-report
+          path: flakiness-report.txt
+      - name: Upload HTML coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: html-coverage-report
+          path: htmlcov/
+      - name: Upload pytest output log
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-output-log
+          path: pytest-output.log
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage.xml
+          fail_ci_if_error: true
+      - name: Run all tests and collect analytics
+        run: |
+          source .venv/bin/activate || .venv\Scripts\activate
+          pytest -n auto -v --tb=short --durations=20 --cov=scripts --cov=run_app.py --cov-report=term-missing --cov-report=html tests/ | tee pytest-analytics.log
+          grep -A 25 'slowest durations' pytest-analytics.log > slowest-tests.txt || true
+      - name: Upload slowest test analytics
+        uses: actions/upload-artifact@v4
+        with:
+          name: slowest-tests
+          path: slowest-tests.txt
+  mypy:
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate || .venv\Scripts\activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
+      - name: Run mypy (type checking)
+        run: |
+          source .venv/bin/activate || .venv\Scripts\activate
+          mypy scripts/ run_app.py tests/
+  bandit:
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate || .venv\Scripts\activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
+      - name: Run bandit (security analysis)
+        run: |
+          source .venv/bin/activate || .venv\Scripts\activate
+          bandit -r scripts/ run_app.py
+  flake8:
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate || .venv\Scripts\activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
+      - name: Run flake8 (linting)
+        run: |
+          source .venv/bin/activate || .venv\Scripts\activate
+          flake8 scripts/ run_app.py tests/
+
+  mutation-testing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run mutation tests (mutmut)
+        run: |
+          source .venv/bin/activate
+          mutmut run --paths-to-mutate scripts/ run_app.py
+          mutmut results > mutmut-results.txt
+          # Calculate mutation score
+          SCORE=$(mutmut results | awk '/mutation score/ {print $3}' | tr -d '%')
+          echo "Mutation score: $SCORE%"
+          if [ -z "$SCORE" ]; then echo 'Could not determine mutation score!'; exit 1; fi
+          if [ "$SCORE" -lt 90 ]; then
+            echo "Mutation score $SCORE% is below threshold (90%)! Failing build."
+            exit 1
+          fi
+        env:
+          PYTHONPATH: .
+      - name: Upload mutmut results
+        uses: actions/upload-artifact@v4
+        with:
+          name: mutmut-results
+          path: mutmut-results.txt
+
+  cli-argument-fuzzing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run CLI argument fuzzing tests
+        run: |
+          source .venv/bin/activate
+          pytest tests/test_cli_fuzzing.py -v --tb=short
+        env:
+          PYTHONPATH: .
+
+  cli-user-simulation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pexpect
+      - name: Run CLI user simulation tests
+        run: |
+          source .venv/bin/activate
+          pytest tests/test_cli_user_simulation.py -v --tb=short
+        env:
+          PYTHONPATH: .
+
+  internationalization:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run internationalization tests
+        run: |
+          source .venv/bin/activate
+          pytest tests/test_internationalization.py -v --tb=short
+        env:
+          PYTHONPATH: .
+
+  dockerized-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Build Docker image
+        run: docker build -t smartaiplatform-test .
+      - name: Run tests in Docker container
+        run: docker run --rm smartaiplatform-test
+
+  snyk-security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run Snyk to check for vulnerabilities
+        uses: snyk/actions/python@v1
+        with:
+          args: --all-projects
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+  test-impact-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest-testmon
+      - name: Run only affected tests (testmon)
+        run: |
+          source .venv/bin/activate
+          pytest --testmon -v --tb=short
+        env:
+          PYTHONPATH: .
+
+  property-based-testing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install hypothesis
+      - name: Run property-based tests (Hypothesis)
+        run: |
+          source .venv/bin/activate
+          pytest tests/test_property_based.py -v --tb=short
+        env:
+          PYTHONPATH: .
+
+  generate-test-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
+      - name: Generate test documentation
+        run: |
+          source .venv/bin/activate
+          python scripts/generate_test_docs.py
+      - name: Upload generated test docs
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-test-docs
+          path: docs/generated_test_docs.md
+
+  split-tests:
+    strategy:
+      matrix:
+        group: [1, 2, 3, 4]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-xdist
+      - name: Run a subset of tests in parallel
+        run: |
+          source .venv/bin/activate
+          pytest -n auto -v --tb=short --dist=loadfile --maxfail=1 --group=${{ matrix.group }} --numprocesses=auto tests/
+        env:
+          PYTHONPATH: .
+
+  resource-leak-detection:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run resource leak detection tests
+        run: |
+          source .venv/bin/activate
+          pytest tests/test_resource_leaks.py -v --tb=short
+        env:
+          PYTHONPATH: .
+
+  custom-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run custom lint for anti-patterns
+        run: |
+          python scripts/custom_lint.py
