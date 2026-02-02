@@ -1,0 +1,42 @@
+# Core tooling and automation
+requests
+pre-commit
+
+# Backend (FastAPI, DB, tasks, etc.)
+fastapi
+uvicorn
+sqlalchemy
+alembic
+psycopg2-binary
+python-dotenv
+pydantic
+celery
+redis
+
+# Frontend (for completeness, but handled by npm/yarn)
+# (No Python packages needed for React)
+
+# Testing
+pytest
+pytest-cov
+httpx
+
+# Linting/Formatting
+black
+flake8
+isort
+
+# Type checking
+mypy
+
+# Optional: for S3/MinIO integration
+boto3
+
+# Optional: for security
+python-jose
+passlib[bcrypt]
+
+# Optional: for code quality
+bandit
+
+# Add more as needed for your stack

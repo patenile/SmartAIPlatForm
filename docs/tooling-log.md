@@ -25,6 +25,9 @@ This log provides a traceable record of all project-level tools, scripts, and au
 |---------------------|------------------------|---------------------|------------------------------|---------------------------------------|
 | pre-commit          | .pre-commit-config.yaml| Run checks before every commit (e.g., lint, link check) | On every git commit                  | `pre-commit install`                  |
 | check_links.py      | scripts/check_links.py  | Check all Markdown docs for broken links | Via pre-commit, CI, or manually       | `pip install requests` (for CI), auto-run by pre-commit and GitHub Action |
+| setup_env.py        | scripts/setup_env.py    | Ensures .venv exists, creates with python3.12 if missing, installs/checks required packages | `python run_app.py setup` or manually | Requires python3.12, requirements.txt, .venv |
+| cleanup.py          | scripts/cleanup.py      | Cleans up all installed packages and removes .venv | `python run_app.py cleanup` or manually | Requires .venv present |
+| run_app.py          | run_app.py              | CLI orchestrator for setup, cleanup, and app run | `python run_app.py [setup|cleanup|run]` | Python 3.12+ |
 | check-links.yml     | .github/workflows/      | CI automation for link checking         | On every push/PR to docs/scripts      | GitHub Actions auto-runs              |
 | Docker/Colima       | docker-compose.yml      | Containerized local dev, cross-platform | On local dev, CI, prod                | See infrastructure.md                 |
 | GitHub Actions      | .github/workflows/      | CI/CD for build, test, deploy           | On every push/PR                      | GitHub auto-runs                      |
@@ -32,7 +35,38 @@ This log provides a traceable record of all project-level tools, scripts, and au
 
 ---
 
-### Example: check_links.py
+### Example: setup_env.py
+- **Purpose:** Ensures a consistent Python environment for all scripts and backend code. Creates .venv with python3.12 if missing, installs/checks all required packages from requirements.txt.
+- **How it works:**
+  - Checks if .venv exists; if not, creates it with python3.12.
+  - Checks if all packages in requirements.txt are installed; installs any missing ones.
+  - Errors if requirements.txt is missing or packages are not satisfied after install.
+- **How/When Used:**
+  - Run automatically via `python run_app.py setup` or manually as needed.
+- **Install/Activate:**
+  - Requires python3.12 and requirements.txt in project root.
+
+### Example: cleanup.py
+- **Purpose:** Cleans up the Python environment for a fresh start or before switching branches/major upgrades.
+- **How it works:**
+  - Uninstalls all packages in .venv.
+  - Removes the .venv directory.
+  - Warns if .venv is currently active in the shell.
+- **How/When Used:**
+  - Run via `python run_app.py cleanup` or manually as needed.
+- **Install/Activate:**
+  - Requires .venv present in project root.
+
+### Example: run_app.py CLI
+- **Purpose:** Single entrypoint for orchestrating setup, cleanup, and app execution.
+- **How it works:**
+  - `python run_app.py setup` runs environment setup.
+  - `python run_app.py cleanup` runs environment cleanup.
+  - `python run_app.py run` launches all app components (infra, backend, frontend).
+- **How/When Used:**
+  - Used for onboarding, automation, and local development.
+- **Install/Activate:**
+  - Requires Python 3.12+ and all scripts in place.
 - **Purpose:** Ensures all Markdown documentation links (internal and external) are valid, preventing broken navigation and improving project quality.
 - **How it works:**
   - Scans all docs/*.md files for links.
@@ -68,3 +102,4 @@ This log provides a traceable record of all project-level tools, scripts, and au
 | Date | Change | Author |
 |------|--------|--------|
 | 2026-02-01 | Initial creation, added pre-commit, check_links.py, directory plan | GitHub Copilot |
+| 2026-02-01 | Added setup_env.py, cleanup.py, run_app.py CLI integration, and updated documentation | GitHub Copilot |
