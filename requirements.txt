@@ -20,6 +20,8 @@ redis
 pytest
 pytest-cov
 httpx
+pytest-xdist
+pexpect
 
 # Linting/Formatting
 black
@@ -38,5 +40,16 @@ passlib[bcrypt]
 
 # Optional: for code quality
 bandit
+
+# Mutation testing tools
+mutmut
+cosmic-ray
+
+#property-based testing
+hypothesis
+
+#auto-generating tests documentation from code/comments
+pytest-clarity
+pytest-sphinx
 
 # Add more as needed for your stack
