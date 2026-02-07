@@ -1,0 +1,24 @@
+# pyproject.toml for SmartAIPlatform
+[tool.black]
+line-length = 100
+
+[tool.isort]
+profile = "black"
+
+
+[tool.flake8]
+max-line-length = 100
+exclude = ".git,__pycache__,docs,scripts"
+
+
+# Pylint does not officially support pyproject.toml config in all versions.
+# If you want to keep this, use the correct syntax, but .pylintrc is preferred.
+# [tool.pylint."MESSAGES CONTROL"]
+# disable = ["C0114", "C0115", "C0116"]
+
+
+# Add more tool configs as needed
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"

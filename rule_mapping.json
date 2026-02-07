@@ -1,0 +1,9 @@
+{
+  "null": {
+    "description": "Custom rule: None",
+    "category": "custom",
+    "script": "check_None.py",
+    "severity": "error",
+    "enforcement": "block"
+  }
+}

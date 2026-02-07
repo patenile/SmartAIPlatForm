@@ -1,0 +1,27 @@
+# This GitHub Actions workflow syncs the SmartAIPlatform_Board.tsv to GitHub issues on every push to the board file.
+# It uses the provided Python script and a GitHub token with repo scope.
+
+name: Sync Board TSV to GitHub Issues
+
+on:
+  push:
+    paths:
+      - 'docs/SmartAIPlatform_Board.tsv'
+
+jobs:
+  sync-board:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install requests
+      - name: Sync board TSV to GitHub issues
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python scripts/sync_board_to_github.py --repo patenile/SmartAIPlatForm --tsv docs/SmartAIPlatform_Board.tsv

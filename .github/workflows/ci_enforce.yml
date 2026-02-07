@@ -1,0 +1,225 @@
+- name: Run all master rule checks (custom scripts)
+              run: |
+                source .venv/bin/activate
+                python scripts/run_all_checks.py
+      - name: Install extra tools for advanced checks
+        run: |
+          source .venv/bin/activate
+          pip install radon flake8-cognitive-complexity jscpd safety pip-audit codespell yamllint markdownlint-cli hadolint jsonlint eslint prettier stylelint
+      - name: Cyclomatic complexity (radon)
+        run: |
+          source .venv/bin/activate
+          radon cc -s -a .
+      - name: Cognitive complexity (flake8-cognitive-complexity)
+        run: |
+          source .venv/bin/activate
+          flake8 --select=CCR .
+      - name: Code duplication (jscpd)
+        run: |
+          npx jscpd --min-tokens 50 --reporters console .
+      - name: Dependency vulnerability scan (safety)
+        run: |
+          source .venv/bin/activate
+          safety check -r requirements.txt || true
+      - name: Dependency vulnerability scan (pip-audit)
+        run: |
+          source .venv/bin/activate
+          pip-audit || true
+      - name: Spell check (codespell)
+        run: |
+          source .venv/bin/activate
+          codespell .
+      - name: YAML lint (yamllint)
+        run: |
+          source .venv/bin/activate
+          yamllint .
+      - name: JSON lint (jsonlint)
+        run: |
+          find . -name '*.json' -exec jsonlint {} \;
+      - name: Markdown lint (markdownlint)
+        run: |
+          npx markdownlint '**/*.md'
+      - name: Dockerfile lint (hadolint)
+        run: |
+          hadolint Dockerfile || true
+      - name: Frontend lint (eslint, prettier, stylelint)
+        run: |
+          if [ -d "frontend" ]; then \
+            cd frontend && \
+            npx eslint . && \
+            npx prettier --check . && \
+            npx stylelint '**/*.css' || true; \
+            cd ..; \
+          else \
+            echo 'No frontend directory, skipping.'; \
+          fi
+      - name: Run shebang/import check
+        run: |
+          source .venv/bin/activate
+          python scripts/check_shebang_and_imports.py
+      - name: Generate Markdown report of rule violations
+        run: |
+          source .venv/bin/activate
+          python scripts/run_all_checks.py --report markdown || true
+          python scripts/run_all_checks.py --report html > rule_report.html || true
+      - name: Comment on PR with rule violations (bot)
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_PR_URL: ${{ github.event.pull_request.url }}
+         GITHUB_CHECK_RUN_ID: ${{ github.run_id }}
+         GITHUB_REPOSITORY: ${{ github.repository }}
+         GITHUB_SHA: ${{ github.sha }}
+        run: |
+          source .venv/bin/activate
+          python scripts/run_all_checks.py --report markdown | python scripts/pr_rule_violation_bot.py || true
+      - name: Notify Slack of rule violations
+        if: failure()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          source .venv/bin/activate
+          python scripts/run_all_checks.py --report markdown | python scripts/notify_slack.py || true
+      - name: Notify Email of rule violations
+        if: failure()
+        env:
+          SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          NOTIFY_EMAIL: ${{ secrets.NOTIFY_EMAIL }}
+        run: |
+          source .venv/bin/activate
+          python scripts/run_all_checks.py --report markdown | python scripts/notify_email.py || true
+      - name: Check onboarding essentials
+        run: |
+          source .venv/bin/activate
+          python scripts/check_onboarding.py
+# GitHub Actions workflow for full automation enforcement
+# Runs on every push and pull request
+
+name: CI Lint, Type, Security, Test, Modularity
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  enforce:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.12', '3.11']
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install -r requirements.txt
+          pip install black flake8 pylint isort mypy bandit pytest pytest-cov autoflake mutmut vulture
+      - name: Run black (formatting)
+        run: |
+          source .venv/bin/activate
+          black --check .
+      - name: Run flake8 (linting)
+        run: |
+          source .venv/bin/activate
+          flake8 .
+      - name: Run pylint (linting, function quality)
+        run: |
+          source .venv/bin/activate
+          pylint --max-line-length=100 --max-args=6 --max-locals=15 --max-branches=12 --max-statements=50 --max-returns=6 --max-nested-blocks=4 --min-public-methods=1 --max-public-methods=20 --good-names=i,j,k,ex,Run,df $(git ls-files '*.py')
+      - name: Run isort (import sorting)
+        run: |
+          source .venv/bin/activate
+          isort --check-only .
+      - name: Run mypy (type checking)
+        run: |
+          source .venv/bin/activate
+          mypy .
+      - name: Run bandit (security)
+        run: |
+          source .venv/bin/activate
+          bandit -r .
+      - name: Run modularity check (file length)
+        run: |
+          source .venv/bin/activate
+          python scripts/check_py_length.py
+      - name: Run tests with coverage (min 90%) [with retry]
+        id: test_with_coverage
+        run: |
+          source .venv/bin/activate
+          n=0
+          until [ "$n" -ge 3 ]; do
+            pytest --cov=. --cov-fail-under=90 --cov-report=term-missing && break
+            n=$((n+1))
+            echo "Test run failed, retrying ($n/3)..."
+            sleep 10
+          done
+          if [ "$n" -ge 3 ]; then
+            echo "::set-output name=failed::1"
+            exit 1
+          fi
+            - name: Auto-create GitHub issue on repeated test failure
+              if: failure() && steps.test_with_coverage.outcome == 'failure'
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                GITHUB_REPOSITORY: ${{ github.repository }}
+              run: |
+                source .venv/bin/activate
+                python scripts/auto_create_ci_issue.py --title "CI/CD: Test suite failed after 3 retries" --body "CI/CD pipeline failed tests after 3 attempts. Please investigate.\nCommit: ${{ github.sha }}\nWorkflow: ${{ github.workflow }}\nRun: ${{ github.run_id }}" || true
+      # Example rollback step (placeholder, customize for your deploy strategy)
+            - name: Rollback to previous release on deploy failure
+              if: failure() && github.ref == 'refs/heads/main'
+              run: |
+                echo "Rolling back to previous release (placeholder logic)"
+                # Add your rollback logic here, e.g.:
+                # git checkout $(git describe --tags --abbrev=0)
+                # ./deploy.sh --rollback
+                # docker service update --image previous_image ...
+      - name: Check for unused imports (autoflake)
+        run: |
+          source .venv/bin/activate
+          autoflake --check --remove-unused-variables --remove-all-unused-imports -r .
+      - name: Check for unused code (vulture)
+        run: |
+          source .venv/bin/activate
+          vulture .
+      - name: Run mutation testing (mutmut)
+        run: |
+          source .venv/bin/activate
+          mutmut run --paths-to-mutate scripts/ || true
+          mutmut results
+      - name: Check for outdated dependencies
+        run: |
+          source .venv/bin/activate
+          pip list --outdated
+      - name: Check for secrets
+        uses: gitleaks/gitleaks-action@v2
+        with:
+          config-path: .gitleaks.toml
+      - name: Ensure docstrings
+        run: |
+          source .venv/bin/activate
+          grep -L '"""' $(git ls-files '*.py') && exit 1 || echo 'All files have docstrings.'
+      - name: Check for missing or invalid docstrings
+        run: |
+          source .venv/bin/activate
+          python scripts/check_docstrings.py
+      - name: Generate API docs (pdoc)
+        run: |
+          source .venv/bin/activate
+          pip install pdoc
+          pdoc --html scripts --output-dir docs/api
+      - name: Suggest files to add tests for if coverage drops
+        run: |
+          source .venv/bin/activate
+          pytest --cov=. --cov-report=term-missing | python scripts/suggest_tests_for_coverage.py || true

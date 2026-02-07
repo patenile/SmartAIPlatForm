@@ -1,0 +1,60 @@
+User roles and permissions			Todo
+Admin dashboard and multi-user support			Todo
+Internationalization (multi-language support)			Todo
+Accessibility compliance (WCAG)			Todo
+Performance/load testing and monitoring			Todo
+Auto-scaling and scalability features			Todo
+Automated backup and disaster recovery			Todo
+Plugin/template marketplace			Todo
+Billing and subscription integration			Todo
+Mobile app scaffolding support			Todo
+API-first (OpenAPI/GraphQL) generation			Todo
+Privacy policy and legal compliance (GDPR/CCPA)			Todo
+License management and compliance			Todo
+Automated changelog and release automation			Todo
+Title	URL	Assignees	Status	Linked pull requests	Sub-issues progress	Priority	Estimate	Size	Iteration
+Application Features	https://github.com/patenile/SmartAIPlatForm/issues/9	patenile	Todo						
+Application Design Document	https://github.com/patenile/SmartAIPlatForm/issues/10	patenile	Todo						
+Application user guide	https://github.com/patenile/SmartAIPlatForm/issues/11	patenile	Todo						
+Feature tests	https://github.com/patenile/SmartAIPlatForm/issues/12	patenile	Todo						
+CI/CD automation setup	https://github.com/patenile/SmartAIPlatForm/issues/13	patenile	Todo						
+github automation setup	https://github.com/patenile/SmartAIPlatForm/issues/14	patenile	Todo						
+Generic Docker document	https://github.com/patenile/SmartAIPlatForm/issues/16	patenile	Todo						
+Generic PostGresDB Document	https://github.com/patenile/SmartAIPlatForm/issues/17	patenile	Todo						
+Application utility Debug Document	https://github.com/patenile/SmartAIPlatForm/issues/18	patenile	Todo						
+Application Feature Document	https://github.com/patenile/SmartAIPlatForm/issues/19	patenile	Todo						
+Docker Debug Document	https://github.com/patenile/SmartAIPlatForm/issues/20	patenile	Todo						
+Frontend Debug Document	https://github.com/patenile/SmartAIPlatForm/issues/21	patenile	Todo						
+Backend debug document	https://github.com/patenile/SmartAIPlatForm/issues/22	patenile	Todo						
+Automate Progress tracking document	https://github.com/patenile/SmartAIPlatForm/issues/23	patenile	Todo						
+Automate Progress Tracking setup	https://github.com/patenile/SmartAIPlatForm/issues/24	patenile	Todo						
+Automate next priority items	https://github.com/patenile/SmartAIPlatForm/issues/25	patenile	Todo						
+Pre-commit setup	https://github.com/patenile/SmartAIPlatForm/issues/26	patenile	Todo						
+environment setup document	https://github.com/patenile/SmartAIPlatForm/issues/27	patenile	Todo						
+environment setup	https://github.com/patenile/SmartAIPlatForm/issues/28	patenile	Todo						
+Application design Architecture Document	https://github.com/patenile/SmartAIPlatForm/issues/29	patenile	Todo						
+MCP AI Assistant Model Document	https://github.com/patenile/SmartAIPlatForm/issues/30	patenile	Todo						
+MCP AI Assistant setup	https://github.com/patenile/SmartAIPlatForm/issues/31	patenile	Todo						
+Third Party API Documentation	https://github.com/patenile/SmartAIPlatForm/issues/32	patenile	Todo						
+Third party usage setup	https://github.com/patenile/SmartAIPlatForm/issues/33	patenile	Todo						
+Third party application/tool integration	https://github.com/patenile/SmartAIPlatForm/issues/34	patenile	Todo						
+Automate Pull Requests to the Backlog	https://github.com/patenile/SmartAIPlatForm/issues/35	patenile	Todo						
+Automate Sub-issue to backlog	https://github.com/patenile/SmartAIPlatForm/issues/36		Todo						
+Platform plugin/module system			Todo
+Template pack system (tech stack selection)			Todo
+No-code/low-code UI for app creation			Todo
+Natural language to code/document pipeline			Todo
+AI model selection and fine-tuning			Todo
+Automated test and CI/CD pipeline generation			Todo
+Automated security scanning and compliance			Todo
+Verification of generated code (static analysis, mutation testing)			Todo
+Audit trails for generated artifacts			Todo
+One-click deployment to cloud/container			Todo
+Integration with third-party APIs/services			Todo
+Automated environment provisioning (dev, staging, prod)			Todo
+Analytics for platform usage and feedback			Todo
+Feedback loop for AI/template improvement			Todo
+Community-contributed templates/plugins			Todo
+Documentation/guides for platform extension			Todo
+Onboarding flows and validation for user input			Todo
+IDE integration for real-time feedback	Enhancement	Backlog	Integrate rule engine with VS Code for live diagnostics, code actions, and inline feedback on Python files.	N/A	N/A	N/A

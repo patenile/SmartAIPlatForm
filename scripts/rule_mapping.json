@@ -1,0 +1,178 @@
+{
+  "check_py_length": {
+    "rule": "Max 350 lines per Python file (±10%). No 'God' files. Split large files into focused modules.",
+    "doc": "docs/python_script_coding_rules.md#file-structure--modularity",
+    "fix": "Refactor the file into smaller modules, each with a single responsibility. Ensure each file is under 350 lines (±10%)."
+  },
+  "check_dependencies": {
+    "rule": "All dependencies must be listed in requirements.txt. No unused or missing dependencies.",
+    "doc": "docs/python_script_coding_rules.md#dependencies--configuration",
+    "fix": "Add any missing dependencies to requirements.txt. Remove unused packages. Run 'pip install -r requirements.txt' to update."
+  },
+  "check_python_utilities": {
+    "rule": "All utility/setup scripts must be Python only.",
+    "doc": "docs/python_script_coding_rules.md#security--best-practices",
+    "fix": "Rename or rewrite any non-Python scripts in the scripts/ directory to .py files."
+  },
+  "setup_env": {
+    "rule": "Only one .env file at project root. All environment variables must be loaded via scripts/setup_env.py.",
+    "doc": "docs/coding_and_modularization_standards.md#environment-setup-rules--best-practices",
+    "fix": "Move all .env files to the project root. Ensure all scripts/services use setup_env.py for environment setup."
+  },
+  "manage_services": {
+    "rule": "All services must be healthy and managed via centralized scripts. Reuse healthy services, otherwise clean and restart. Use Docker Compose for service orchestration.",
+    "doc": "docs/coding_and_modularization_standards.md#environment-setup-rules--best-practices",
+    "fix": "Ensure Docker and Docker Compose are installed. Use manage_services.py to check, stop, and start services as needed."
+  },
+  "sync_board_to_github": {
+    "rule": "Board TSV and GitHub issues must be kept in sync. Issues must be created for all board items.",
+    "doc": "docs/SmartAIPlatform_Board.tsv",
+    "fix": "Ensure GITHUB_TOKEN is set, repo is correct, and TSV is formatted properly. Fix any API errors and rerun the script."
+  },
+  "check_shebang": {
+    "rule": "Every Python file must start with a shebang (#!) as the first line.",
+    "doc": "docs/python_script_coding_rules.md#file-structure--modularity",
+    "fix": "Add '#!/usr/bin/env python3' as the first line of the file."
+  },
+  "check_imports_at_top": {
+    "rule": "All import statements must be grouped at the top of the file, after the shebang and docstring/comments.",
+    "doc": "docs/python_script_coding_rules.md#file-structure--modularity",
+    "fix": "Move all import statements to the top of the file, after the shebang and any module docstring/comments."
+  }
+  ,
+  "check_onboarding": {
+    "rule": "Onboarding wizard must be used to enable, suppress, or configure rules for the project.",
+    "doc": "docs/python_script_coding_rules.md#rule-onboarding-wizard",
+    "fix": "Run the onboarding wizard to update .smartai_rules.yaml."
+  },
+  "check_docstrings": {
+    "rule": "Every module, class, and function must have a docstring.",
+    "doc": "docs/python_script_coding_rules.md#docstrings--comments",
+    "fix": "Add missing docstrings to all modules, classes, and functions."
+  },
+  "rule_onboarding_wizard": {
+    "rule": "Interactive onboarding wizard for rule configuration.",
+    "doc": "docs/python_script_coding_rules.md#rule-onboarding-wizard",
+    "fix": "Run scripts/rule_onboarding_wizard.py to configure rules."
+  },
+  "rule_adoption_analytics": {
+    "rule": "Analyze and report rule adoption rates across the codebase.",
+    "doc": "docs/python_script_coding_rules.md#rule-adoption-analytics",
+    "fix": "Run scripts/rule_adoption_analytics.py to generate adoption reports."
+  },
+  "rule_auto_tuning": {
+    "rule": "Suggest or auto-tune rule thresholds based on violation patterns.",
+    "doc": "docs/python_script_coding_rules.md#automated-rule-tuning",
+    "fix": "Run scripts/rule_auto_tuning.py --suggest or --apply."
+  },
+  "rule_deprecation_upgrade": {
+    "rule": "Detect deprecated rules and suggest or apply upgrades.",
+    "doc": "docs/python_script_coding_rules.md#rule-deprecationupgrade-automation",
+    "fix": "Run scripts/rule_deprecation_upgrade.py to migrate deprecated rules."
+  },
+  "rule_dependency_graph": {
+    "rule": "Generate a visual dependency/conflict graph for rules.",
+    "doc": "docs/python_script_coding_rules.md#rule-dependency-graph-visualization",
+    "fix": "Run scripts/rule_dependency_graph.py --update-graph."
+  },
+  "rule_doc_sync": {
+    "rule": "Auto-generate rule documentation from code and config.",
+    "doc": "docs/python_script_coding_rules.md#self-documenting-rules",
+    "fix": "Run scripts/rule_doc_sync.py --fix."
+  },
+  "rule_drift_detection": {
+    "rule": "Detect if code is drifting from enforced rules.",
+    "doc": "docs/python_script_coding_rules.md#rule-drift-detection",
+    "fix": "Run scripts/rule_drift_detection.py --slack --email."
+  },
+  "rule_exception_review": {
+    "rule": "Track and review rule suppressions/overrides with expiry dates.",
+    "doc": "docs/python_script_coding_rules.md#rule-exception-expiryreview-automation",
+    "fix": "Run scripts/rule_exception_review.py --auto-remove."
+  },
+  "rule_explainability_ai": {
+    "rule": "Provide explainability and AI suggestions for rule violations.",
+    "doc": "docs/python_script_coding_rules.md#rule-explainabilityai-suggestions",
+    "fix": "Run scripts/rule_explainability_ai.py to get explanations."
+  },
+  "rule_feedback_loop": {
+    "rule": "Collect and summarize developer feedback on rules.",
+    "doc": "docs/python_script_coding_rules.md#rule-feedback-loop",
+    "fix": "Run scripts/rule_feedback_loop.py --submit or --summary."
+  },
+  "rule_impact_analysis": {
+    "rule": "Analyze which files are affected by rule changes.",
+    "doc": "docs/python_script_coding_rules.md#automated-rule-impact-analysis",
+    "fix": "Run scripts/rule_impact_analysis.py."
+  },
+  "rule_marketplace": {
+    "rule": "Marketplace for sharing and discovering rules.",
+    "doc": "docs/python_script_coding_rules.md#rule-marketplace",
+    "fix": "Run scripts/rule_marketplace.py to browse or publish rules."
+  },
+  "rule_migration_assistant": {
+    "rule": "Automated assistant for migrating to new or updated rules.",
+    "doc": "docs/python_script_coding_rules.md#automated-rule-migration-assistant",
+    "fix": "Run scripts/rule_migration_assistant.py."
+  },
+  "rule_ownership_mapping": {
+    "rule": "Assign, list, or query rule/file ownership.",
+    "doc": "docs/python_script_coding_rules.md#userteam-ownership-mapping",
+    "fix": "Run scripts/rule_ownership_mapping.py to manage ownership."
+  },
+  "rule_performance_profiling": {
+    "rule": "Profile and report rule performance and runtime.",
+    "doc": "docs/python_script_coding_rules.md#automated-rule-performance-profiling",
+    "fix": "Run scripts/rule_performance_profiling.py."
+  },
+  "rule_release_gates": {
+    "rule": "Block releases if critical rules are violated, with override/escalation workflow.",
+    "doc": "docs/python_script_coding_rules.md#rule-based-release-gates",
+    "fix": "Run scripts/rule_release_gates.py --enforce."
+  },
+  "rule_rollback_hotfix": {
+    "rule": "Auto-revert the last rule/config change if CI fails.",
+    "doc": "docs/python_script_coding_rules.md#automated-rollbackhotfix-for-rule-failures",
+    "fix": "Run scripts/rule_rollback_hotfix.py --auto-revert."
+  },
+  "rule_security_patch": {
+    "rule": "Scan and auto-patch rule scripts for security issues.",
+    "doc": "docs/python_script_coding_rules.md#automated-security-patch-for-rule-scripts",
+    "fix": "Run scripts/rule_security_patch.py --scan --patch --notify."
+  },
+  "rule_severity_enforcement": {
+    "rule": "Set or list severity/enforcement for rules.",
+    "doc": "docs/python_script_coding_rules.md#rule-severity-levels--enforcement-modes",
+    "fix": "Run scripts/rule_severity_enforcement.py --set or --list."
+  },
+  "rule_usage_analytics": {
+    "rule": "Generate a dashboard of rule usage and violation trends.",
+    "doc": "docs/python_script_coding_rules.md#rule-usage-analytics-dashboard",
+    "fix": "Run scripts/rule_usage_analytics.py --update-dashboard."
+  },
+  "rule_what_if_simulator": {
+    "rule": "Preview the impact of enabling/disabling rules.",
+    "doc": "docs/python_script_coding_rules.md#rule-what-if-simulator",
+    "fix": "Run scripts/rule_what_if_simulator.py --enable/--disable."
+  },
+  "rule_visualization_dashboard": {
+    "rule": "Interactive web dashboard for rule analytics, coverage, drift, and trends.",
+    "doc": "docs/python_script_coding_rules.md#rule-visualization-dashboard",
+    "fix": "Run scripts/rule_visualization_dashboard.py."
+  },
+  "pr_feedback_bot": {
+    "rule": "Post inline PR comments for rule violations.",
+    "doc": "docs/python_script_coding_rules.md#automated-pr-feedback-bot",
+    "fix": "Run scripts/pr_feedback_bot.py --pr <PR_NUMBER>."
+  },
+  "cross_repo_rule_consistency": {
+    "rule": "Check rule config consistency across multiple repos.",
+    "doc": "docs/python_script_coding_rules.md#cross-repo-rule-consistency-checker",
+    "fix": "Run scripts/cross_repo_rule_consistency.py --repos <repo1> <repo2>."
+  },
+  "self_documenting_rules": {
+    "rule": "Auto-generate rule documentation from code and config.",
+    "doc": "docs/python_script_coding_rules.md#self-documenting-rules",
+    "fix": "Run scripts/self_documenting_rules.py --update-docs."
+  }
+}

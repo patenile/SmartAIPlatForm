@@ -1,0 +1,24 @@
+# SmartAIPlatform Rule Configuration
+# This file allows granular rule overrides and thresholds per folder/module.
+# Example:
+# global:
+#   max_file_length: 350
+#   min_coverage: 90
+# scripts/:
+#   max_file_length: 400
+#   skip_rules: [check_shebang]
+# tests/:
+#   skip_rules: [check_py_length, check_shebang]
+
+# Global defaults
+max_file_length: 350
+min_coverage: 90
+skip_rules: []
+
+# Per-folder/module overrides
+folders:
+  scripts/:
+    max_file_length: 400
+    skip_rules: []
+  tests/:
+    skip_rules: [check_py_length, check_shebang]
